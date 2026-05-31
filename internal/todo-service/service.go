@@ -13,7 +13,7 @@ import (
 
 const idLength = 16
 
-type Persistance interface {
+type Persistence interface {
 	Store([]Todo) error
 	Load() ([]Todo, error)
 }
@@ -22,10 +22,10 @@ type TodosService struct {
 	items   []Todo
 	itemsMu sync.RWMutex
 
-	persistance Persistance
+	persistance Persistence
 }
 
-func NewWithPersistance(p Persistance) (*TodosService, error) {
+func NewWithPersistance(p Persistence) (*TodosService, error) {
 	items, err := p.Load()
 	if err != nil {
 		return nil, fmt.Errorf("unable to read todos from persistance: %w", err)
