@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tmw/tiltplay/pkg/uniqueid"
+	"github.com/tmw/exploring-tilt/pkg/uniqueid"
 )
 
 const idLength = 16

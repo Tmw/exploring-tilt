@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	todosservice "github.com/tmw/tiltplay/internal/todo-service"
-	"github.com/tmw/tiltplay/pkg/httphelper"
+	todosservice "github.com/tmw/exploring-tilt/internal/todo-service"
+	"github.com/tmw/exploring-tilt/pkg/httphelper"
 )
 
 const (
