@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div style={{ fontSize: "20pt" }}>
         <strong>Count is:{count}</strong>
       </div>
       <div>

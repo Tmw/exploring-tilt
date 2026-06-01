@@ -19,7 +19,7 @@ docker_build(
     "todo-api",
     context=".",
     dockerfile="cmd/todo-api/Dockerfile",
-    ignore=['./data/'],
+    ignore=['./data/', './frontend/'],
 
     #live_update=[
         #sync("cmd/todo-api/", "/app"),
@@ -34,13 +34,9 @@ docker_build(
     context="./frontend",
     dockerfile="frontend/Dockerfile",
     ignore=['./data/'],
-
-    #live_update=[
-        #sync("cmd/todo-api/", "/app"),
-        #sync("internal/todo-service/", "/app"),
-        #sync("pkg", "/app"),
-        #run("go run cmd/todo-api/.")
-    #]
+    live_update=[
+        sync("./frontend/src/", "/app/src"),
+    ]
 )
 
 
