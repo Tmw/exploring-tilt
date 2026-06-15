@@ -16,6 +16,7 @@ type Service interface {
 	Create(params todo.CreateTodoParams) []todo.Todo
 	List() []todo.Todo
 	Delete(id string) ([]todo.Todo, error)
+	Toggle(id string, params todo.ToggleTodoParams) ([]todo.Todo, error)
 }
 
 type Api struct {
@@ -64,6 +65,30 @@ func (a *Api) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todos)
 }
 
+func (a *Api) HandleToggleTodo(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var params todo.ToggleTodoParams
+
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		a.logger.Warn("error decoding JSON body", slog.Any("error", err))
+		return
+	}
+
+	todos, err := a.svc.Toggle(id, params)
+	if err != nil {
+		if errors.Is(err, todo.ErrItemNotFound) {
+			httphelper.RespondError(w, 404, "item not found")
+			return
+		}
+
+		a.logger.Error("error toggling todo", slog.Any("error", err))
+		httphelper.RespondError(w, 500, "internal server error")
+		return
+	}
+
+	json.NewEncoder(w).Encode(todos)
+}
+
 func (a *Api) Mux() http.Handler {
 	mux := http.NewServeMux()
 	mw := middleware.New(
@@ -88,6 +113,7 @@ func (a *Api) Mux() http.Handler {
 	mux.HandleFunc("GET /todos", a.HandleGetTodos)
 	mux.HandleFunc("POST /todos", a.HandleCreateTodo)
 	mux.HandleFunc("DELETE /todos/{id}", a.HandleDeleteTodo)
+	mux.HandleFunc("PATCH /todos/{id}/status", a.HandleToggleTodo)
 
 	return mw.Wrap(mux)
 }
