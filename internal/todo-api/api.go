@@ -8,6 +8,8 @@ import (
 
 	todo "github.com/tmw/exploring-tilt/internal/todo"
 	"github.com/tmw/exploring-tilt/pkg/httphelper"
+	"github.com/tmw/exploring-tilt/pkg/middleware"
+	"github.com/tmw/exploring-tilt/pkg/middleware/middlewares"
 )
 
 type Service interface {
@@ -62,12 +64,30 @@ func (a *Api) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todos)
 }
 
-func (a *Api) Mux() *http.ServeMux {
+func (a *Api) Mux() http.Handler {
 	mux := http.NewServeMux()
+	mw := middleware.New(
+		middlewares.Cors(
+			middlewares.CorsConfig{
+				Origin: "http://localhost:9090",
+				Methods: []string{
+					http.MethodGet,
+					http.MethodPatch,
+					http.MethodPost,
+					http.MethodDelete,
+					http.MethodOptions,
+				},
+				Headers: []string{
+					"Content-Type",
+				},
+			},
+		),
+		middlewares.JSON(),
+	)
 
 	mux.HandleFunc("GET /todos", a.HandleGetTodos)
 	mux.HandleFunc("POST /todos", a.HandleCreateTodo)
 	mux.HandleFunc("DELETE /todos/{id}", a.HandleDeleteTodo)
 
-	return mux
+	return mw.Wrap(mux)
 }
