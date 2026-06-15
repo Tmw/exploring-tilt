@@ -1,12 +1,10 @@
 package uniqueid
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	ulid "github.com/oklog/ulid/v2"
 )
 
 func Generate(length int) string {
-	buf := make([]byte, length)
-	rand.Read(buf)
-	return hex.EncodeToString(buf)
+	id := ulid.Make()
+	return id.String()
 }
