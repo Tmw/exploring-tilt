@@ -1,18 +1,15 @@
-import { useState } from "react";
+import "@mantine/core/styles.css";
+import { MantineProvider } from "@mantine/core";
+import { Page } from "./components/Page";
+import { TodoList } from "./components/TodoList";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div style={{ fontSize: "20pt" }}>
-        <strong>Count is:{count}</strong>
-      </div>
-      <div>
-        <button onClick={() => setCount(count + 1)}>Inc</button>
-        <button onClick={() => setCount(count - 1)}>Dec</button>
-      </div>
-    </>
+    <MantineProvider>
+      <Page>
+        <TodoList />
+      </Page>
+    </MantineProvider>
   );
 }
 
