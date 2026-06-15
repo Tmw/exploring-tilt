@@ -16,8 +16,19 @@ spec:
       containers:
         - name: todo-frontend
           image: todo-frontend
+          env:
+            - name: VITE_API_URL
+              value: "http://localhost:9191"
           ports:
             - containerPort: 9090
+          volumeMounts:
+            - name: frontend
+              mountPath: /workdir
+      volumes:
+        - name: frontend
+          hostPath:
+            path: __REPO_PATH__/frontend/
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
