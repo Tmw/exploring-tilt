@@ -21,11 +21,27 @@ spec:
             - "-js"
             - "-m"
             - "8222"
+            - "-config"
+            - "/nats/config/nats-config.conf"
           ports:
             - name: client
               containerPort: 4222
             - name: monitor
               containerPort: 8222
+          volumeMounts:
+            - name: config
+              mountPath: /nats/config
+              readOnly: true
+            - name: storage
+              mountPath: /data/nats
+      volumes:
+        - name: config
+          configMap:
+            name: nats-config
+        - name: storage
+          hostPath:
+            path: __REPO_PATH__/data/nats
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
@@ -41,3 +57,14 @@ spec:
     - name: monitor
       port: 8222
       targetPort: 8222
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nats-config
+data:
+  nats-config.conf: |
+    jetstream {
+      store_dir: /data/nats
+    }
