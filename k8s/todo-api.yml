@@ -21,10 +21,16 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
+            - name: source
+              mountPath: /app
       volumes:
         - name: storage
           hostPath:
             path: __REPO_PATH__/data/todo-app-storage/
+            type: Directory
+        - name: source
+          hostPath:
+            path: __REPO_PATH__/
             type: Directory
 
 ---

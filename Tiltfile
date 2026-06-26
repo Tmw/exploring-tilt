@@ -20,15 +20,15 @@ k8s_resource('nats', port_forwards=["4222", "8222"], labels=["nats"])
 docker_build(
     "todo-api",
     context=".",
-    dockerfile="cmd/todo-api/Dockerfile",
-    ignore=['./data/', './frontend/'],
+    dockerfile="cmd/todo-api/Dockerfile.dev",
+    ignore=['./*'],
 )
 
 docker_build(
     "todo-frontend",
     context="./frontend",
-    dockerfile="frontend/Dockerfile",
-    ignore=['./data/'],
+    dockerfile="frontend/Dockerfile.dev",
+    ignore=['./*'],
 )
 
 
