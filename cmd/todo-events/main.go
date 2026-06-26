@@ -94,6 +94,9 @@ func eventHandler(logger *slog.Logger, sub *realtime.Subscriber) http.HandlerFun
 		updateCh, unsubscribe := sub.Subscribe(r.Context(), "todos")
 		defer unsubscribe()
 
+		heartbeat := time.NewTicker(10 * time.Second)
+		defer heartbeat.Stop()
+
 		flusher, ok := w.(http.Flusher)
 		if !ok {
 			http.Error(w, "streaming not supported", http.StatusInternalServerError)
@@ -106,8 +109,18 @@ func eventHandler(logger *slog.Logger, sub *realtime.Subscriber) http.HandlerFun
 				logger.Info("client hung up", slog.String("remoteAddr", r.RemoteAddr))
 				return
 
+			case t := <-heartbeat.C:
+				msg := fmt.Sprintf("data: {\"kind\": \"heartbeat\", \"at\":\"%s\"}\n\n", t.Format(time.RFC3339))
+				_, err := w.Write([]byte(msg))
+				if err != nil {
+					logger.Error("error while writing heartbeat to stream", slog.Any("error", err))
+					return
+				}
+
+				flusher.Flush()
+
 			case u := <-updateCh:
-				msg := fmt.Sprintf("data: last_update_at=%s\n\n", u.When.Format(time.RFC3339))
+				msg := fmt.Sprintf("data: {\"kind\": \"update\", \"at\":\"%s\"}\n\n", u.When.Format(time.RFC3339))
 				_, err := w.Write([]byte(msg))
 				if err != nil {
 					logger.Error("error while writing to stream", slog.Any("error", err))
