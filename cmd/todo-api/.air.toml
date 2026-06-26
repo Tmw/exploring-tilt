@@ -2,4 +2,4 @@
 pre_cmd = ["go mod tidy"]
 cmd = "go build -o /tmp/todo-api ./cmd/todo-api/."
 bin = "/tmp/todo-api"
-include_dir = ["./cmd", "./intrnal", "./pkg"]
+include_dir = ["./cmd", "./internal", "./pkg"]

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-events
+  labels:
+    app: todo-events
+spec:
+  selector:
+    matchLabels:
+      app: todo-events
+  template:
+    metadata:
+      labels:
+        app: todo-events
+    spec:
+      containers:
+        - name: todo-events
+          image: todo-events
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: source
+              mountPath: /app
+      volumes:
+        - name: source
+          hostPath:
+            path: __REPO_PATH__/
+            type: Directory
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-events
+spec:
+  selector:
+    app: todo-events
+  type: ClusterIP
+  ports:
+    - port: 9090
+      protocol: TCP
+      targetPort: 9090

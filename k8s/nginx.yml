@@ -61,6 +61,10 @@ data:
           proxy_pass http://todo-api:9191/;
         }
 
+        location /events {
+          proxy_pass http://todo-events:9090;
+        }
+
         # everything else: route to front-end
         location / {
           proxy_pass http://todo-frontend:9090/;

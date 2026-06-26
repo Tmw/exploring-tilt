@@ -14,25 +14,25 @@ import (
 )
 
 const (
-	defaultStoragePath = "/storage/items.db"
-	defaultServerPort  = "9191"
+	defaultServerPort     = "9191"
+	defaultNatsServerAddr = "nats://nats:4222"
 )
 
 type config struct {
-	StoragePath string
-	ServerPort  string
+	ServerPort     string
+	NatsServerAddr string
 }
 
 func getConfig() config {
 	return config{
-		StoragePath: cmp.Or(os.Getenv("STORAGE_PATH"), defaultStoragePath),
-		ServerPort:  cmp.Or(os.Getenv("SERVER_PORT"), defaultServerPort),
+		ServerPort:     cmp.Or(os.Getenv("SERVER_PORT"), defaultServerPort),
+		NatsServerAddr: cmp.Or(os.Getenv("NATS_SERVER_ADDR"), defaultNatsServerAddr),
 	}
 }
 
 func run() error {
 	config := getConfig()
-	conn, err := todoservice.NewNatsConnection("nats://nats:4222")
+	conn, err := todoservice.NewNatsConnection(config.NatsServerAddr)
 	if err != nil {
 		return fmt.Errorf("error connecting to nats: %w", err)
 	}
@@ -40,8 +40,9 @@ func run() error {
 
 	persistance, err := todoservice.NewNatsPersistance(conn, "todos")
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error setting up persistance: %w", err)
 	}
+
 	svc, err := todosservice.NewWithPersistance(persistance)
 	if err != nil {
 		return fmt.Errorf("error setting up service: %w", err)

@@ -1,0 +1,5 @@
+FROM golang:1.26.3-alpine3.23 AS builder
+WORKDIR /app
+RUN go install github.com/air-verse/air@latest
+
+CMD air -c ./cmd/todo-events/.air.toml

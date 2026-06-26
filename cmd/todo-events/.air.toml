@@ -1,0 +1,8 @@
+[build]
+pre_cmd = ["go mod tidy"]
+cmd = "go build -o /tmp/todo-events ./cmd/todo-events/."
+entrypoint = "/tmp/todo-events"
+include_dir = ["./cmd", "./internal", "./pkg"]
+
+[run]
+cmd = "/tmp/todo-events"

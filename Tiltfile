@@ -11,18 +11,27 @@ def replacements(blob):
 
 k8s_yaml_with_replacements('k8s/todo-api.yml')
 k8s_yaml_with_replacements('k8s/todo-frontend.yml')
+k8s_yaml_with_replacements('k8s/todo-events.yml')
 k8s_yaml_with_replacements('k8s/nats.yml')
 k8s_yaml_with_replacements('k8s/nginx.yml')
 
 k8s_resource('todo-api', labels=["todo-api"])
 k8s_resource('todo-frontend', labels=["todo-frontend"])
+k8s_resource('todo-events', port_forwards="9090:9090", labels=["todo-events"])
 k8s_resource('nats', labels=["nats"])
-k8s_resource('nginx', port_forwards=["8888"], labels=["nginx"])
+k8s_resource('nginx', port_forwards="8888:80", labels=["nginx"])
 
 docker_build(
     "todo-api",
     context=".",
     dockerfile="cmd/todo-api/Dockerfile.dev",
+    ignore=['./*'],
+)
+
+docker_build(
+    "todo-events",
+    context=".",
+    dockerfile="cmd/todo-events/Dockerfile.dev",
     ignore=['./*'],
 )
 
