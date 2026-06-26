@@ -1,6 +1,6 @@
 # exploring-tilt
 
-Playing with tilt.dev by building out a small example
+Playing with tilt.dev by building out a small (over engineered) todo-app.
 
 ## Prerequisites
 
@@ -12,6 +12,12 @@ Playing with tilt.dev by building out a small example
 ```console
 tilt up
 ```
+
+then visit: `http://localhost:8888`
+
+## Architecture diagram
+
+![Architecture Diagram](./architecture-diagram.png)
 
 ## License
 
