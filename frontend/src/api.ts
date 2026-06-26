@@ -1,6 +1,5 @@
 import * as z from "zod";
 
-console.log(import.meta.env);
 const ROOT_URL = import.meta.env.VITE_API_URL ?? "http://localhost:9192";
 
 export const TodoSchema = z.object({

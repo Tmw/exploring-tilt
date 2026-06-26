@@ -66,6 +66,7 @@ export function TodoList() {
 
   const handleCreateTodo = async (params: CreateTodoParams) => {
     await createTodo(params);
+    form.reset();
   };
 
   const pluralized = (n: number | null | undefined) =>
