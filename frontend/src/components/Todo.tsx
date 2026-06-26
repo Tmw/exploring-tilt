@@ -1,5 +1,5 @@
 import { ActionIcon, Card, Checkbox, Flex } from "@mantine/core";
-import { type Todo } from "../hooks/useGetTodos";
+import { type Todo } from "../api";
 import { TrashIcon } from "@phosphor-icons/react";
 
 interface TodoProps {
