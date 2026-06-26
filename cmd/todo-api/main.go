@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	todoservice "github.com/tmw/exploring-tilt/internal/todo"
 	todosservice "github.com/tmw/exploring-tilt/internal/todo"
 	todoapi "github.com/tmw/exploring-tilt/internal/todo-api"
 )
@@ -29,13 +30,21 @@ func getConfig() config {
 	}
 }
 
-func main() {
+func run() error {
 	config := getConfig()
-	persistance := todosservice.NewFilePersitanceWithPath(config.StoragePath)
+	conn, err := todoservice.NewNatsConnection("nats://nats:4222")
+	if err != nil {
+		return fmt.Errorf("error connecting to nats: %w", err)
+	}
+	defer conn.Drain()
+
+	persistance, err := todoservice.NewNatsPersistance(conn, "todos")
+	if err != nil {
+		panic(err)
+	}
 	svc, err := todosservice.NewWithPersistance(persistance)
 	if err != nil {
-		slog.Error("error setting up service", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("error setting up service: %w", err)
 	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	api := todoapi.New(svc, logger)
@@ -51,6 +60,14 @@ func main() {
 
 	logger.Info("server started", slog.String("addr", server.Addr))
 	if err := server.ListenAndServe(); err != nil {
-		logger.Error("error while binding server", slog.Any("error", err))
+		return fmt.Errorf("error while binding server: %w", err)
+	}
+	return nil
+}
+
+func main() {
+	if err := run(); err != nil {
+		slog.Error("error while running server", slog.Any("error", err))
+		os.Exit(1)
 	}
 }

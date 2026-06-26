@@ -11,9 +11,11 @@ def replacements(blob):
 
 k8s_yaml_with_replacements('k8s/todo-api.yml')
 k8s_yaml_with_replacements('k8s/todo-frontend.yml')
+k8s_yaml_with_replacements('k8s/nats.yml')
 
 k8s_resource('todo-api', port_forwards="9191", labels=["todo-api"])
 k8s_resource('todo-frontend', port_forwards="9090", labels=["todo-frontend"])
+k8s_resource('nats', port_forwards=["4222", "8222"], labels=["nats"])
 
 docker_build(
     "todo-api",
