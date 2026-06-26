@@ -92,6 +92,10 @@ func (a *Api) HandleToggleTodo(w http.ResponseWriter, r *http.Request) {
 func (a *Api) Mux() http.Handler {
 	mux := http.NewServeMux()
 	mw := middleware.New(
+		// cors is no longer strictly required for running locally
+		// now that we're proxying through nginx
+		//
+		// keeping it anyway.
 		middlewares.Cors(
 			middlewares.CorsConfig{
 				Origin: "http://localhost:9090",

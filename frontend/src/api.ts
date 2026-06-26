@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const ROOT_URL = import.meta.env.VITE_API_URL ?? "http://localhost:9192";
+const API_PREFIX = "/api";
 
 export const TodoSchema = z.object({
   id: z.string(),
@@ -14,7 +14,7 @@ export type Todo = z.infer<typeof TodoSchema>;
 export type Todos = z.infer<typeof TodosSchema>;
 
 export async function fetchTodos() {
-  const resp = await fetch(ROOT_URL + "/todos");
+  const resp = await fetch(API_PREFIX + "/todos");
   if (!resp.ok) {
     throw new Error("error fetching todos");
   }
@@ -29,7 +29,7 @@ export const CreateTodoSchema = z.object({
 export type CreateTodoParams = z.infer<typeof CreateTodoSchema>;
 export async function createTodo(params: CreateTodoParams) {
   const payload = CreateTodoSchema.parse(params);
-  const resp = await fetch(ROOT_URL + "/todos", {
+  const resp = await fetch(API_PREFIX + "/todos", {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -47,7 +47,7 @@ export async function createTodo(params: CreateTodoParams) {
 
 export type DeleteTodoParams = Pick<Todo, "id">;
 export async function deleteTodo(params: DeleteTodoParams) {
-  const resp = await fetch(ROOT_URL + "/todos/" + params.id, {
+  const resp = await fetch(API_PREFIX + "/todos/" + params.id, {
     method: "DELETE",
   });
 
@@ -65,7 +65,7 @@ export type ToggleTodoParams = {
 };
 
 export async function toggleTodo(params: ToggleTodoParams) {
-  const resp = await fetch(ROOT_URL + "/todos/" + params.id + "/status", {
+  const resp = await fetch(API_PREFIX + "/todos/" + params.id + "/status", {
     method: "PATCH",
     headers: {
       "content-type": "application/json",

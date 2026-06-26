@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.31.2-alpine-slim
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  ports:
+    - port: 8888
+      protocol: TCP
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    events {
+        worker_connections   100;
+        use epoll;
+    }
+    http {
+      server {
+        location /health {
+          default_type text/plain;
+          return 200 "OK";
+        }
+
+        location /api/ {
+          proxy_pass http://todo-api:9191/;
+        }
+
+        # everything else: route to front-end
+        location / {
+          proxy_pass http://todo-frontend:9090/;
+
+          # support websocket upgrades for hot module reloading in Vite
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+        }
+      }
+    }
+---
+
